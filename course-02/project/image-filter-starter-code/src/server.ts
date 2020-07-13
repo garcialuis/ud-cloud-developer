@@ -9,18 +9,21 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
   // Set the network port
   const port = process.env.PORT || 8082;
+
+  // HttpStatus to use code names:
+  var HttpStatus = require('http-status-codes');
   
   // Use the body parser middleware for post requests
   app.use(bodyParser.json());
 
   // Endpoint implemented based on instructions located after code block
-  app.get("/filteredimage", async ( req, res ) => {
+  app.get("/filteredimage", async ( req: express.Request, res: express.Response ) => {
     // Retrieve the image_url query param from the request 
     let image_url = req.query.image_url;
 
     //Ensure that there is a value given for the image url
     if (!image_url) {
-      return res.status(400).send({message: 'A valid URL to an image needs to be provided'});
+      return res.status(HttpStatus.BAD_REQUEST).send({message: 'A valid URL to an image needs to be provided'});
     }
 
     // Call filterImageFromURL and receive the absolute path back
@@ -30,7 +33,7 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
     // Return an OK status code, the filtered image, and delete the 
     //   temp image from the server by calling deleteLocalFiles
-    res.status(200).sendFile(imageAbsolutePath, () => {
+    res.status(HttpStatus.OK).sendFile(imageAbsolutePath, () => {
       deleteLocalFiles(absolutePaths);
     });
 
@@ -55,7 +58,7 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   
   // Root Endpoint
   // Displays a simple message to the user
-  app.get( "/", async ( req, res ) => {
+  app.get( "/", async ( req: express.Request, res: express.Response ) => {
     res.send("try GET /filteredimage?image_url={{}}")
   } );
   
